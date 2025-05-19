@@ -16,8 +16,6 @@
 #include <ESP32Servo.h>
 #include <stdlib.h>
 using namespace std;
-//#include <Servo.h>
-#include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 //#include <SPI.h>
 //#include <SD.h>
@@ -53,11 +51,8 @@ class Blister{
         }
 };
 
-
 Servo  plateServo, extruderMoveServo, extruderPushServo;
-//ESP32PWM pwm;
-//ESP32PWM extruderMovePwm;
-//ESP32PWM extruderPushPwm;
+
 int plateServoCurrentPosition = 52;
 int plateServoMinPosition = 0;
 int plateServoMaxPosition = 300;
@@ -70,7 +65,6 @@ int extruderMoveMaxPosition = 153;
 int extruderPushCurrentPosition = 90;
 int extruderPushMinPosition = 0;
 int extruderPushMaxPosition = 133;
-//int extruderPushMaxPosition = 80;
 
 enum ExtruderMode {
   SinglePill,
@@ -79,44 +73,17 @@ enum ExtruderMode {
 };
 ExtruderMode mode = SinglePill;
 
-Blister blisters[3] = { Blister( "Vitamin Yellow", 1), Blister( "Vitamin Green", 2), Blister( "Vitamin Blue", 3)};
+Blister blisters[6] = { Blister( "Vitamin Yellow", 1), Blister( "Vitamin Green", 2), Blister( "Vitamin Blue", 3), Blister( "Vitamin Yellow", 4), Blister( "Vitamin Green", 5), Blister( "Vitamin Blue", 6)};
 int recipies[9][3] = { {1,1,2}, {1,-1,3}, {3,3,-1}, {-1,-1,-1}, {-1,-1,-1}, {-1,-1,-1}, {-1,-1,-1}, {-1,-1,-1}, {-1,-1,-1}};
 
-LiquidCrystal_I2C lcd(0x27,16,2);
-//int cs = D8;
-
 void setup() {
-    Serial.begin(115200);
+    
 
-    // Wire.begin();
-    // lcd.init();                 // initialize the lcd 
-    // lcd.backlight();
-    // lcd.setCursor(0,0);
-    // lcd.print("Hello, world!");
-    // lcd.setCursor(0,1);
-    // lcd.print("ESP32!");
+    Serial.begin(115200);
     //while (!Serial)
     //    ; // Wait for Serial to become available. Is optimized away for some cores.
-
-    // if(!SD.begin(cs)) {
-    //     Serial.prontln("cannot init SD!");
-    // } else {
-    //     Serial.println("SD init ok")
-    // }
-
-    // File f = SD.Open("config.txt", "w")];
-    // f.write("test");
-    // f.close();
-    // f = SD.Open("config.txt", "r")];
-    // Serial.print("file name: ");
-    // Serial.println(f.fullName());
-    // Serial.print("file size: ");
-    // Serial.println(f.size());
-
     Serial.println(F("Using IRremote library version " VERSION_IRREMOTE));
     Serial.println(F("Enabling IR input..."));
-
-    // Start the receiver and if not 3. parameter specified, take LED_BUILTIN pin from the internal boards definition as default feedback LED
     IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
 
     pinMode(RED_LED_PIN, OUTPUT);
@@ -142,11 +109,10 @@ void setup() {
     delay(50);
 
     initPlate();
-    void initBlister2();
     digitalWrite(GREEN_LED_PIN, HIGH);
 }
 
-void loop() {    
+void loop() {  
     processIRsignal();
     IrReceiver.resume();
 }
@@ -346,39 +312,86 @@ void initPlate() {
     initBlister(0);
     initBlister(1);
     initBlister(2);
+    initBlister(3);
+    initBlister(4);
+    initBlister(5);
 }
 
 void initBlister(int blisterNumber) {
     switch(blisterNumber) {
         case 0:
-            blisters[blisterNumber].pills[0] = Pill(53, 133);
-            blisters[blisterNumber].pills[1] = Pill(58, 148);
-            blisters[blisterNumber].pills[2] = Pill(65, 123);
-            blisters[blisterNumber].pills[3] = Pill(70, 137);
-            blisters[blisterNumber].pills[4] = Pill(73, 109);
-            blisters[blisterNumber].pills[5] = Pill(78, 120);
-            blisters[blisterNumber].pills[6] = Pill(82, 89);
-            blisters[blisterNumber].pills[7] = Pill(87, 102);
+            blisters[blisterNumber].pills[0] = Pill(55, 125);
+            blisters[blisterNumber].pills[1] = Pill(58, 140);
+            blisters[blisterNumber].pills[2] = Pill(64, 111);
+            blisters[blisterNumber].pills[3] = Pill(70, 125);
+            blisters[blisterNumber].pills[4] = Pill(76, 94);
+            blisters[blisterNumber].pills[5] = Pill(78, 107);
+            blisters[blisterNumber].pills[6] = Pill(83, 80);
+            blisters[blisterNumber].pills[7] = Pill(87, 91);
             break;
         case 1:
-            blisters[blisterNumber].pills[0] = Pill(75, 160);
-            blisters[blisterNumber].pills[1] = Pill(99, 160);
-            blisters[blisterNumber].pills[2] = Pill(82, 147);
-            blisters[blisterNumber].pills[3] = Pill(97, 148);
-            blisters[blisterNumber].pills[4] = Pill(89, 130);
-            blisters[blisterNumber].pills[5] = Pill(99, 130);
-            blisters[blisterNumber].pills[6] = Pill(96, 109);
-            blisters[blisterNumber].pills[7] = Pill(103, 109);
+            blisters[blisterNumber].pills[0] = Pill(77, 150);
+            blisters[blisterNumber].pills[1] = Pill(104, 151);
+            blisters[blisterNumber].pills[2] = Pill(86, 134);
+            blisters[blisterNumber].pills[3] = Pill(98, 133);
+            blisters[blisterNumber].pills[4] = Pill(93, 114);
+            blisters[blisterNumber].pills[5] = Pill(101, 117);
+            blisters[blisterNumber].pills[6] = Pill(97, 95);
+            blisters[blisterNumber].pills[7] = Pill(106, 96);
             break;
         case 2:
-            blisters[blisterNumber].pills[0] = Pill(124, 149);
-            blisters[blisterNumber].pills[1] = Pill(133, 136);
-            blisters[blisterNumber].pills[2] = Pill(116, 139);
-            blisters[blisterNumber].pills[3] = Pill(128, 127);
-            blisters[blisterNumber].pills[4] = Pill(114, 120);
-            blisters[blisterNumber].pills[5] = Pill(126, 110);
-            blisters[blisterNumber].pills[6] = Pill(117, 101);
-            blisters[blisterNumber].pills[7] = Pill(124, 93);
+            blisters[blisterNumber].pills[0] = Pill(124, 136);
+            blisters[blisterNumber].pills[1] = Pill(135, 122);
+            blisters[blisterNumber].pills[2] = Pill(119, 122);
+            blisters[blisterNumber].pills[3] = Pill(131, 113);
+            blisters[blisterNumber].pills[4] = Pill(116, 101);
+            blisters[blisterNumber].pills[5] = Pill(126, 100);
+            blisters[blisterNumber].pills[6] = Pill(117, 84);
+            blisters[blisterNumber].pills[7] = Pill(126, 75  );
+            break;
+        case 3:
+            blisters[blisterNumber].pills[0] = Pill(166, 188);
+            blisters[blisterNumber].pills[1] = Pill(170, 133);
+            blisters[blisterNumber].pills[2] = Pill(194, 109);
+
+            blisters[blisterNumber].pills[3] = Pill(71, 137);
+            blisters[blisterNumber].pills[3]._present = false;   
+            blisters[blisterNumber].pills[4] = Pill(73, 109);
+            blisters[blisterNumber].pills[4]._present = false;
+            blisters[blisterNumber].pills[5] = Pill(78, 120);
+            blisters[blisterNumber].pills[5]._present = false;
+            blisters[blisterNumber].pills[6] = Pill(82, 89);
+            blisters[blisterNumber].pills[6]._present = false;
+            blisters[blisterNumber].pills[7] = Pill(87, 102);
+            blisters[blisterNumber].pills[7]._present = false;
+            break;
+        case 4:
+            blisters[blisterNumber].pills[0] = Pill(0, 0);
+            blisters[blisterNumber].pills[0]._present = false;
+            blisters[blisterNumber].pills[1] = Pill(99, 160);
+            blisters[blisterNumber].pills[1]._present = false;
+            blisters[blisterNumber].pills[2] = Pill(82, 147);
+            blisters[blisterNumber].pills[2]._present = false;
+            blisters[blisterNumber].pills[3] = Pill(97, 148);
+            blisters[blisterNumber].pills[3]._present = false;
+            blisters[blisterNumber].pills[4] = Pill(89, 130);
+            blisters[blisterNumber].pills[4]._present = false;
+            blisters[blisterNumber].pills[5] = Pill(99, 130);
+            blisters[blisterNumber].pills[5]._present = false;
+            blisters[blisterNumber].pills[6] = Pill(96, 109);
+            blisters[blisterNumber].pills[6]._present = false;
+            blisters[blisterNumber].pills[7] = Pill(103, 109);
+            blisters[blisterNumber].pills[7]._present = false;
+            break;
+        case 5:
+            blisters[blisterNumber].pills[0] = Pill(10, 133);
+            blisters[blisterNumber].pills[1] = Pill(23, 120);
+            blisters[blisterNumber].pills[2] = Pill(5, 127);
+            blisters[blisterNumber].pills[3] = Pill(15, 112);
+            blisters[blisterNumber].pills[4] = Pill(2, 107);
+            blisters[blisterNumber].pills[5] = Pill(13, 94);
+            blisters[blisterNumber].pills[6] = Pill(3, 83);
+            blisters[blisterNumber].pills[7] = Pill(12, 69);
             break;
         default:
             break;
@@ -393,10 +406,10 @@ bool extrudePill(int blisterNumber) {
         if (blisters[blisterNumber].pills[i]._present == true && pillFound == false) {
             plateServoCurrentPosition = blisters[blisterNumber].pills[i]._plateAgnle;
             movePlate();
-            delay(500);
+            delay(1000);
             extruderMoveCurrentPosition = blisters[blisterNumber].pills[i]._extruderAngle;
             moveExtruder();
-            delay(100);
+            delay(500);
             pushExtruder();
             blisters[blisterNumber].pills[i]._present = false;
             pillFound = true;
